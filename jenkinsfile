@@ -1,45 +1,42 @@
-pipeline{
+pipeline {
     agent any
-    environment
-    DOCKERHUB: docker-hub-cred
+    environment {
+        DOCKERHUB = 'docker-hub-cred'
+    }
     
-    stages{
-        stage("building image"){
-            steps{
+    stages {
+        stage("building image") {
+            steps {
                 echo "======== building a docker image ========"
-                sh 'docker build -t ahmedsalama3014/html-app:1.0'
+                sh 'docker build -t ahmedsalama3014/html-app:1.0 .'
             }
-            stage("building image"){
-            steps{
+        }
+
+        stage("running image") {
+            steps {
                 echo "======== run a docker image ========"
                 sh 'docker run ahmedsalama3014/html-app:1.0'
             }
-            steps{
+        }
+
+        stage("pushing image") {
+            steps {
                 echo "======== push a docker image ========"
-                sh docker login 'docker-hub-cred'
+                sh 'docker login -u $DOCKERHUB'
                 sh 'docker push ahmedsalama3014/html-app:1.0'
-            post{
-                always{
-                    echo "========always========"
-                }
-                success{
-                    echo "========A executed successfully========"
-                }
-                failure{
-                    echo "========A execution failed========"
-                }
             }
         }
     }
-    post{
-        always{
-            echo "========always========"
+
+    post {
+        always {
+            echo "======== always ========"
         }
-        success{
-            echo "========pipeline executed successfully ========"
+        success {
+            echo "======== pipeline executed successfully ========"
         }
-        failure{
-            echo "========pipeline execution failed========"
+        failure {
+            echo "======== pipeline execution failed ========"
         }
     }
 }
