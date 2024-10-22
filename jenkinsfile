@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKERHUB = 'docker-hub-cred'
     }
-    
+
     stages {
         stage("building image") {
             steps {
@@ -15,8 +15,11 @@ pipeline {
         stage("pushing image") {
             steps {
                 echo "======== push a docker image ========"
-                sh 'docker login -u $DOCKERHUB'
-                sh 'docker push ahmedsalama3014/html-app:1.0'
+                // Use Jenkins credentials to login to Docker Hub
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                    sh 'docker push ahmedsalama3014/html-app:1.0'
+                }
             }
         }
     }
